@@ -16,7 +16,6 @@ import server
 
 
 class ModelTests(unittest.TestCase):
-
     def setUp(self):
         # A new, empty database for every test, in a temporary folder.
         self.folder = tempfile.TemporaryDirectory()
@@ -78,15 +77,15 @@ class ModelTests(unittest.TestCase):
         rows = server.posts_after(self.db_path, 1)
         self.assertEqual([row["text"] for row in rows], ["second", "third"])
 
-
     def test_log_line_has_the_time_the_author_and_the_text(self):
         row = server.save_post(self.db_path, "Aiko", "the library is open late tonight")
-        self.assertEqual(server.post_to_log_line(row),
-                         row["posted_at"] + "  Aiko: the library is open late tonight")
+        self.assertEqual(
+            server.post_to_log_line(row),
+            row["posted_at"] + "  Aiko: the library is open late tonight",
+        )
 
 
 class RealServerTest(unittest.TestCase):
-
     def setUp(self):
         self.folder = tempfile.TemporaryDirectory()
         db_path = os.path.join(self.folder.name, "test.db")

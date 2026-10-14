@@ -1,17 +1,49 @@
 # Timeline: short commands for this project. Type `make help` to see them.
 
-.PHONY: help run test reset
+.PHONY: help setup run test lint format check reset worktree
 
 help:
-	@echo "make run    start the server (with-backend version), then open http://localhost:8009"
-	@echo "make test   run the checks in with-backend/test_server.py"
-	@echo "make reset  delete with-backend/timeline.db, so the timeline starts empty"
+	@echo "make setup            install Python and the tools, turn on the commit checks"
+	@echo "make run              start the server (with-backend version), then open http://localhost:8009"
+	@echo "make test             run every test in with-backend/test_server.py, and say how many ran"
+	@echo "make lint             look for mistakes and style problems (ruff check)"
+	@echo "make format           rewrite the code in the standard style (ruff format)"
+	@echo "make check            everything the commit checks run, on every file, plus the tests"
+	@echo "make reset            delete with-backend/timeline.db, so the timeline starts empty"
+	@echo "make worktree BRANCH=name"
+	@echo "                      give a branch its own folder, .claude/worktrees/name"
+
+setup:
+	uv sync
+	uv run pre-commit install
 
 run:
-	cd with-backend && python3 server.py
+	cd with-backend && uv run python server.py
 
 test:
-	cd with-backend && python3 -m unittest -v
+	cd with-backend && uv run python -m unittest -v
+
+lint:
+	uv run ruff check
+
+format:
+	uv run ruff format
+
+check:
+	uv run pre-commit run --all-files
+	cd with-backend && uv run python -m unittest
 
 reset:
 	rm -f with-backend/timeline.db
+
+# Every branch gets its own worktree: its own folder and its own files, so
+# several people or agents can work at the same time. Run `make setup` in a
+# new worktree first.
+worktree:
+	@test -n "$(BRANCH)" || { echo "Say which branch: make worktree BRANCH=name"; exit 1; }
+	@if git show-ref --quiet --verify refs/heads/$(BRANCH); then \
+		git worktree add .claude/worktrees/$(BRANCH) $(BRANCH); \
+	else \
+		git worktree add -b $(BRANCH) .claude/worktrees/$(BRANCH) main; \
+	fi
+	@echo "Now work in .claude/worktrees/$(BRANCH), and run make setup there first"

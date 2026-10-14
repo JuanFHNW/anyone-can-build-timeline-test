@@ -32,8 +32,8 @@ PAGE_FILES = {
 #  Reads the request. Picks what to do. Asks the model. Sends the answer.
 # ============================================================================
 
-class TimelineHandler(BaseHTTPRequestHandler):
 
+class TimelineHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         url = urlparse(self.path)
         if url.path == "/posts":
@@ -73,7 +73,9 @@ class TimelineHandler(BaseHTTPRequestHandler):
             self.send_json(400, {"error": str(problem)})
             return
         self.send_json(201, post_to_json(row))
-        print(post_to_log_line(row), flush=True)   # one line in the terminal for each new post
+        print(
+            post_to_log_line(row), flush=True
+        )  # one line in the terminal for each new post
 
     def send_json(self, status, data):
         body = json.dumps(data).encode("utf-8")
@@ -122,21 +124,29 @@ def create_tables(db_path):
     old = [c["name"] for c in connection.execute("PRAGMA table_info(posts)")]
     if old and "author_id" not in old:
         connection.close()
-        raise SystemExit("timeline.db was made by an older version of Timeline. "
-                         "Run `make reset`, then start the server again.")
-    connection.execute("CREATE TABLE IF NOT EXISTS users ("
-                       "id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE)")
-    connection.execute("CREATE TABLE IF NOT EXISTS posts ("
-                       "id INTEGER PRIMARY KEY, "
-                       "author_id INTEGER NOT NULL REFERENCES users(id), "
-                       "text TEXT NOT NULL, posted_at TEXT NOT NULL)")
+        raise SystemExit(
+            "timeline.db was made by an older version of Timeline. "
+            "Run `make reset`, then start the server again."
+        )
+    connection.execute(
+        "CREATE TABLE IF NOT EXISTS users ("
+        "id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE)"
+    )
+    connection.execute(
+        "CREATE TABLE IF NOT EXISTS posts ("
+        "id INTEGER PRIMARY KEY, "
+        "author_id INTEGER NOT NULL REFERENCES users(id), "
+        "text TEXT NOT NULL, posted_at TEXT NOT NULL)"
+    )
     connection.commit()
     connection.close()
 
 
 # Each post, with its author's name looked up in users. The view reads row["author"].
-POSTS_WITH_AUTHORS = ("SELECT posts.id, users.name AS author, posts.text, posts.posted_at "
-                      "FROM posts JOIN users ON users.id = posts.author_id")
+POSTS_WITH_AUTHORS = (
+    "SELECT posts.id, users.name AS author, posts.text, posts.posted_at "
+    "FROM posts JOIN users ON users.id = posts.author_id"
+)
 
 
 def check_rules(author, text):
@@ -169,10 +179,12 @@ def save_post(db_path, author, text):
     author_id = user_id_for(connection, author)
     cursor = connection.execute(
         "INSERT INTO posts (author_id, text, posted_at) VALUES (?, ?, ?)",
-        (author_id, text, time.strftime("%H:%M")))
+        (author_id, text, time.strftime("%H:%M")),
+    )
     connection.commit()
-    row = connection.execute(POSTS_WITH_AUTHORS + " WHERE posts.id = ?",
-                             (cursor.lastrowid,)).fetchone()
+    row = connection.execute(
+        POSTS_WITH_AUTHORS + " WHERE posts.id = ?", (cursor.lastrowid,)
+    ).fetchone()
     connection.close()
     return row
 
@@ -180,8 +192,9 @@ def save_post(db_path, author, text):
 def posts_after(db_path, after):
     """Return every post with an id larger than `after`, oldest first."""
     connection = connect(db_path)
-    rows = connection.execute(POSTS_WITH_AUTHORS + " WHERE posts.id > ? ORDER BY posts.id",
-                              (after,)).fetchall()
+    rows = connection.execute(
+        POSTS_WITH_AUTHORS + " WHERE posts.id > ? ORDER BY posts.id", (after,)
+    ).fetchall()
     connection.close()
     return rows
 
@@ -191,9 +204,14 @@ def posts_after(db_path, after):
 #  Turns database rows into the JSON the page reads.
 # ============================================================================
 
+
 def post_to_json(row):
-    return {"id": row["id"], "author": row["author"],
-            "text": row["text"], "posted_at": row["posted_at"]}
+    return {
+        "id": row["id"],
+        "author": row["author"],
+        "text": row["text"],
+        "posted_at": row["posted_at"],
+    }
 
 
 def posts_to_json(rows):
@@ -208,6 +226,7 @@ def post_to_log_line(row):
 # ============================================================================
 #  Starting the server
 # ============================================================================
+
 
 def make_server(port, db_path):
     create_tables(db_path)

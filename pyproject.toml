@@ -1,0 +1,31 @@
+[project]
+name = "anyone-can-build-timeline"
+version = "0.1.0"
+description = "Timeline: a small app where people post short messages, with and without a backend."
+readme = "README.md"
+requires-python = ">=3.12"
+# The app itself uses only the Python standard library. These are the tools around it.
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4",
+    "ruff>=0.12",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 88
+# Ruff also formats Python blocks inside Markdown. The plans in docs/ show code
+# on purpose, so leave Markdown alone.
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+# E/W: style errors · F: real mistakes (unused names, undefined names)
+# I: import order · B: likely bugs · UP: newer Python syntax
+select = ["E", "W", "F", "I", "B", "UP"]
+# Line length is the formatter's job. It cannot split a long string, so the
+# lint rule for it would only complain about lines nobody can shorten.
+ignore = ["E501"]

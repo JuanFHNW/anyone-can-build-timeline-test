@@ -134,11 +134,16 @@ half of 4 are browser behaviour, and are checked by hand, in two windows.
 ## Files
 
 ```
-README.md            what it is, how to run it, things to try
-AGENTS.md            what each file does, for an AI agent working here
+README.md            what it is, how to get your copy, how to run it
+AGENTS.md            what each file does, and the rules, for an AI agent working here
 DESIGN.md            this document
-Makefile             make run · make test · make reset
-.claude/launch.json  starts the backend version from the Claude Code desktop app
+FEATURES.md          what to build next
+Makefile             make setup · run · test · lint · format · check · reset · worktree
+pyproject.toml       the tools around the app (Ruff, pre-commit), installed by uv; the app needs none
+.claude/             the prompt log hook, and a launch config for the Claude Code desktop app
+docs/plans/          one plan per piece of work, from TEMPLATE.md
+docs/reviewer.md     the adversarial reviewer's prompt
+docs/prompts/        every prompt typed into Claude Code here
 page-only/           open index.html; nothing to start
   index.html  style.css  app.js
 with-backend/        make run, then http://localhost:8009

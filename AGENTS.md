@@ -1,7 +1,8 @@
 # AGENTS.md — for the AI agent working in this repository
 
-The person asking you may be new to programming, and may read English as a second language. Explain in short, plain sentences, and define a technical word the first time you
-use it. When you change code, say which file changed and why.
+The person asking you may be new to programming, and may read English as a second language.
+Explain in short, plain sentences, and define a technical word the first time you use it. When you
+change code, say which file changed and why.
 
 ## What this is
 
@@ -10,6 +11,9 @@ timeline, newest first. It comes in two versions with the same screen:
 
 - `page-only/` runs only in the browser. It has no server, so nothing is shared between windows.
 - `with-backend/` has a small Python server and a database, so every window sees every post.
+
+There are no accounts: a person types a name. `DESIGN.md` says how it works and why;
+`FEATURES.md` lists what to build next.
 
 ## What each file does
 
@@ -22,37 +26,44 @@ timeline, newest first. It comes in two versions with the same screen:
 | `with-backend/style.css` | The same look as `page-only/style.css`. |
 | `with-backend/app.js` | Sends each post to the server, and asks the server for new posts every second. |
 | `with-backend/server.py` | The backend, in three labelled parts: **controller**, **model**, **view**. |
-| `with-backend/test_server.py` | The checks for `server.py`. |
+| `with-backend/test_server.py` | The tests for `server.py`. |
 | `with-backend/timeline.db` | The database. The server creates it when it starts. It is not in git. |
-| `Makefile` | Short commands: `make run`, `make test`, `make reset`. |
+| `docs/plans/` | One plan for each piece of work, from `TEMPLATE.md`. |
+| `docs/reviewer.md` | The prompt for an adversarial review of a plan or a diff, in a new session. |
+| `docs/prompts/` | Every prompt typed into Claude Code here, word for word. Written by `.claude/hooks/log_prompt.py`. |
+| `Makefile` | Short commands. `make help` lists them. |
 
 The three parts of `server.py`:
 
 - **Controller** (`TimelineHandler`): reads each request and picks what to do.
-- **Model** (`check_rules`, `user_id_for`, `save_post`, `posts_after`): the rules a post must follow, and
-  the database, in two tables: `users` (each person once) and `posts` (each post points at its author
-  by `author_id`). A name is kept once, in `users`; never copy it into another table.
+- **Model** (`check_rules`, `user_id_for`, `save_post`, `posts_after`): the rules a post must
+  follow, and the database, in two tables: `users` (each person once) and `posts` (each post
+  points at its author by `author_id`).
 - **View** (`post_to_json`, `posts_to_json`): turns database rows into the JSON the page reads.
 
-## How to run it
+## Commands
 
-- Page-only: open `page-only/index.html` in a browser. Nothing to start.
-- With a backend: `make run`, then open <http://localhost:8009>. Press Ctrl+C to stop.
-- Start again with an empty timeline: `make reset`.
-- See what is saved: `sqlite3 with-backend/timeline.db 'select * from users; select * from posts'`
+Run every Python command through `uv run`, so it uses this project's Python and tools.
 
-It needs only `python3` (3.9 or newer). Do not add libraries, packages or a build step.
-Write code that runs on Python 3.9: no `match` statements, and no `X | Y` in type hints.
+- `make setup` — install Python and the tools, turn on the commit checks
+- `make run` — start the server at <http://localhost:8009>
+- `make test` — every test, and how many ran
+- `make lint` / `make format` — Ruff
+- `make check` — every commit check on every file, then every test
+- `make worktree BRANCH=name` — a branch in its own folder, `.claude/worktrees/name`
 
-## How to test it
+See what is saved: `sqlite3 with-backend/timeline.db 'select * from users; select * from posts'`.
 
-`make test`. Every test must pass before and after a change. A new feature gets a new test in
-`with-backend/test_server.py`.
+## Rules
 
-## The one rule
-
-**Keep the three parts of `server.py` separate. A new rule goes in the model.** The controller does
-not check rules and does not touch the database. The view does not decide anything. If a feature
-needs a new rule, write it in the model, and check it in the page too, because the page and the
-server must agree. The server always checks, even when the page already did, because a user can change anything that
-runs on their own device.
+- **Run `make check` before every commit.**
+- **Keep the three parts of `server.py` separate. A new rule goes in the model.** The controller
+  does not check rules and does not touch the database. The view does not decide anything.
+- **The server checks every rule**, even when the page also checks it, because a user can change
+  anything that runs on their own device. Hiding a button is not a check.
+- **A name is kept once, in `users`.** Never copy it into another table.
+- **The app uses only the Python standard library.** No packages for the app, and no build step
+  for the page. The tools around it (Ruff, pre-commit) are added with `uv add --dev`.
+- **Never edit or delete anything in `docs/prompts/`.**
+- **Add or change a test with every change in behaviour**, and show the person the test failing
+  before the fix and passing after.

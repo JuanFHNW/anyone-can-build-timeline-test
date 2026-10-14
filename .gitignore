@@ -1,3 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
 # The database. The server creates it when it starts; `make reset` deletes it.
 timeline.db
-__pycache__/
+.DS_Store
+.env
+# Worktrees: each branch gets its own folder here (`make worktree BRANCH=name`).
+.claude/worktrees/
+# Your own Claude Code settings. The shared ones, with the prompt log, are in .claude/settings.json.
+.claude/settings.local.json

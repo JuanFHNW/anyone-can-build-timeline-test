@@ -4,9 +4,15 @@ Status: draft
 
 *No real person's name or data in a plan or a prompt.*
 
-## 1. What it does
+## 1. The idea
 
-For the person using the app, in two sentences.
+Go round the idea loop before you plan the code. If a step does not hold, go back to the first.
+
+- **The problem:** who it happens to, and what happens.
+- **What it costs:** what goes wrong for them because of it.
+- **The change:** what this plan builds, for the person using the app, in one or two sentences.
+- **What gets better:** what is different afterwards, and how you would see it.
+- **Checked with a real person:** who you asked (not their name) and what they said, or *not yet*.
 
 ## 2. Files it touches
 

@@ -4,10 +4,16 @@ Status: draft, not yet reviewed.
 
 *No real person's name or data in a plan or a prompt.*
 
-## 1. What it does
+## 1. The idea
 
-Under each post, a **♥ Like** button and a count: *♥ 4*. A person can like a post once, so the
-count is the number of people who liked it.
+- **The problem:** a person reads a post they agree with, and the only way to say so is to write a
+  reply post of their own.
+- **What it costs:** the timeline fills with short posts that only say *same* or *yes*, and the
+  person who wrote the first post cannot tell how many people agreed.
+- **The change:** under each post, a **♥ Like** button and a count: *♥ 4*. A person can like a
+  post once, so the count is the number of people who liked it.
+- **What gets better:** fewer *same* posts, and a writer can see which posts people liked.
+- **Checked with a real person:** not yet.
 
 ## 2. Files it touches
 

@@ -4,10 +4,17 @@ Status: draft, not yet reviewed.
 
 *No real person's name or data in a plan or a prompt.*
 
-## 1. What it does
+## 1. The idea
 
-Under each of your own posts, a **Delete** button. Only the person who wrote a post can delete it,
-and once it is deleted it is gone from every window.
+- **The problem:** a person posts something with a mistake in it, or something they wish they had
+  not posted, and it stays on the timeline for everyone.
+- **What it costs:** they post a second message to correct the first, or they stop posting
+  quickly because nothing can be taken back.
+- **The change:** under each of your own posts, a **Delete** button. Only the person who wrote a
+  post can delete it, and once it is deleted it is gone from every window.
+- **What gets better:** a mistake can be removed, and people post more freely.
+- **Checked with a real person:** a classmate said they deleted a post on another app the same day
+  they wrote it.
 
 ## 2. Files it touches
 

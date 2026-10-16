@@ -2,8 +2,9 @@
 
 *Every name and example row here is made up.*
 
-Timeline's own `DESIGN.md` is the worked example. Its sections 3, 4, 6 and 8 have older names:
-Screens, The three parts, How I will know it works, and Build or borrow. They are the same sections.
+Timeline's own `DESIGN.md` is the worked example. Its sections 3, 4 and 6 have older names:
+Screens, The three parts, and How I will know it works; they are the same sections. Its section 8,
+Build or borrow, is left out here.
 
 ---
 
@@ -48,7 +49,3 @@ Sentences a machine can settle: *when ___, it should ___*. At least one edge cas
 | | product or design | accept or reject | | |
 
 (`docs/checker.md` finds the objections; you decide each one.)
-
-## 8. Build vs. buy
-
-What you build yourself, and what you use that somebody else built.

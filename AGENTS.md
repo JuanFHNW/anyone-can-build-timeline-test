@@ -30,9 +30,7 @@ There are no accounts: a person types a name. `DESIGN.md` says how it works and 
 | `with-backend/timeline.db` | The database. The server creates it when it starts. It is not in git. |
 | `docs/plans/` | One plan for each piece of work, from `TEMPLATE.md`. |
 | `docs/reviewer.md` | The prompt for an adversarial review of a plan or a diff, in a new session. |
-| `docs/design-template.md` | The empty design doc: the first seven sections of `DESIGN.md`. |
-| `docs/maker.md` | The prompt that proposes section 5 of a design doc, the data model. |
-| `docs/checker.md` | The prompt for an adversarial review of a design doc, with no context: a subagent, or a new session. |
+| `docs/design-doc/` | For writing a design doc: `design-template.md` (the empty design doc, the first seven sections of `DESIGN.md`), `maker.md` (proposes section 5, the data model) and `checker.md` (an adversarial review of a design doc, with no context: a subagent, or a new session). |
 | `docs/prompts/` | Every prompt typed into Claude Code here, word for word. Written by `.claude/hooks/log_prompt.py`. |
 | `Makefile` | Short commands. `make help` lists them. |
 

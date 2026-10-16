@@ -161,6 +161,20 @@ To start again with an empty timeline, stop the server and run `make reset`.
 4. Open a pull request in your repository, in your own words, with the plan and the prompts in it.
    Merge it when `make check` passes and you can explain every change.
 
+## Write a design doc
+
+`DESIGN.md` is Timeline's own design doc: read it as the example. To write one for your own product,
+copy three files from `docs/` into your product's repository:
+
+1. **`design-template.md`**, as your `DESIGN.md`. Write sections 1 to 4 yourself, in your own words.
+2. **`maker.md`**. Ask your agent to read it and follow it: it proposes section 5, the data model.
+   Change anything that is not your product.
+3. **`checker.md`**. Start a reviewer with no context, a subagent or a new session, and have it
+   read `checker.md` and follow it. Write each objection in section 7, with *accept* or *reject*,
+   and *why*.
+
+Then commit, and add one line to your `AGENTS.md`: *Read `DESIGN.md` before any change.*
+
 ## Checks
 
 | Command | What it does |

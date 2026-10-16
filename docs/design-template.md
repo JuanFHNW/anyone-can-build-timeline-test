@@ -2,8 +2,8 @@
 
 *Every name and example row here is made up.*
 
-*Timeline's own `DESIGN.md` is the worked example. It calls sections 3, 4, 6 and 8* Screens, The
-three parts, How I will know it works *and* Build or borrow*; they are the same sections.*
+Timeline's own `DESIGN.md` is the worked example. Its sections 3, 4, 6 and 8 have older names:
+Screens, The three parts, How I will know it works, and Build or borrow. They are the same sections.
 
 ---
 

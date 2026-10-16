@@ -164,7 +164,10 @@ To start again with an empty timeline, stop the server and run `make reset`.
 ## Write a design doc
 
 `DESIGN.md` is Timeline's own design doc: read it as the example. To write one for your own product,
-copy the three files in `docs/design-doc/` into your product's repository:
+copy the files in `docs/design-doc/` into your product's repository. If your idea is already a slide
+deck (a press release and FAQ), save it as a PDF in the same folder, and start with
+**`from-your-deck.md`**: your agent gives feedback on the idea, you decide what to keep, and then it
+drafts sections 1 to 4 for you to edit. Otherwise:
 
 1. **`design-template.md`**, as your `DESIGN.md`. Write sections 1 to 4 yourself, in your own words.
 2. **`maker.md`**. Ask your agent to read it and follow it: it proposes section 5, the data model.

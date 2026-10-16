@@ -33,7 +33,7 @@ The frontend, the backend and the database: what each one is here, and why.
 
 ## 5. The data model
 
-The tables, their columns, how they point at each other, and example rows. (`docs/maker.md` can
+The tables, their columns, how they point at each other, and example rows. (`maker.md` can
 propose this; you decide.)
 
 ## 6. Acceptance criteria
@@ -48,4 +48,4 @@ Sentences a machine can settle: *when ___, it should ___*. At least one edge cas
 |---|---|---|---|---|
 | | product or design | accept or reject | | |
 
-(`docs/checker.md` finds the objections; you decide each one.)
+(`checker.md` finds the objections; you decide each one.)

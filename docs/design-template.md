@@ -2,6 +2,9 @@
 
 *Every name and example row here is made up.*
 
+*Timeline's own `DESIGN.md` is the worked example. It calls sections 3, 4, 6 and 8* Screens, The
+three parts, How I will know it works *and* Build or borrow*; they are the same sections.*
+
 ---
 
 *The product spec*
@@ -14,15 +17,16 @@ Who has the problem, what happens to them, how often, and what they do now.
 
 What this version will not do, so nobody builds it by accident.
 
-## 3. Screens
+## 3. User flow
 
-Each screen, what is on it, and its one job. How a person moves from one screen to the next.
+Each screen, what is on it, and its one job. What a person does to move from one screen to the
+next.
 
 ---
 
 *The engineering design*
 
-## 4. The three parts
+## 4. Architecture
 
 The frontend, the backend and the database: what each one is here, and why.
 
@@ -31,7 +35,7 @@ The frontend, the backend and the database: what each one is here, and why.
 The tables, their columns, how they point at each other, and example rows. (`docs/maker.md` can
 propose this; you decide.)
 
-## 6. How I will know it works
+## 6. Acceptance criteria
 
 Sentences a machine can settle: *when ___, it should ___*. At least one edge case.
 
@@ -45,6 +49,6 @@ Sentences a machine can settle: *when ___, it should ___*. At least one edge cas
 
 (`docs/checker.md` finds the objections; you decide each one.)
 
-## 8. Build or borrow
+## 8. Build vs. buy
 
 What you build yourself, and what you use that somebody else built.

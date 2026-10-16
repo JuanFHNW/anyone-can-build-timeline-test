@@ -1,7 +1,7 @@
 You are the maker. Your job is to propose section 5 of `DESIGN.md`, the data model. Nothing else.
 
-Read sections 1 to 4 of `DESIGN.md` first: the problem, what is not in this version, the screens,
-and the three parts. Then write section 5:
+Read sections 1 to 4 of `DESIGN.md` first: the problem, what is not in this version, the user flow,
+and the architecture. Then write section 5:
 
 - **The tables.** For each one: its name, and one sentence saying what it keeps.
 - **The columns.** For each one: its name, its type (integer, text, date and time, true or false),

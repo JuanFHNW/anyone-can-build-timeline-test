@@ -84,6 +84,17 @@ class ModelTests(unittest.TestCase):
             row["posted_at"] + "  Aiko: the library is open late tonight",
         )
 
+    def test_liking_a_post_increments_like_count(self):
+        post = server.save_post(self.db_path, "Aiko", "first")
+        row = server.like_post(self.db_path, post["id"], "Ben")
+        self.assertEqual(row["like_count"], 1)
+
+    def test_the_same_user_cannot_like_the_same_post_twice(self):
+        post = server.save_post(self.db_path, "Aiko", "first")
+        server.like_post(self.db_path, post["id"], "Ben")
+        with self.assertRaises(server.RuleBroken):
+            server.like_post(self.db_path, post["id"], "Ben")
+
 
 class RealServerTest(unittest.TestCase):
     def setUp(self):
@@ -122,6 +133,35 @@ class RealServerTest(unittest.TestCase):
         self.assertEqual(caught.exception.code, 400)
         reason = json.loads(caught.exception.read())["error"]
         self.assertIn("empty", reason)
+        caught.exception.close()
+
+    def test_like_post_endpoint(self):
+        self.post({"author": "Aiko", "text": "hello"})
+        request = urllib.request.Request(
+            self.base + "/posts/1/like",
+            data=json.dumps({"name": "Ben"}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(request) as answer:
+            self.assertEqual(answer.status, 200)
+            data = json.loads(answer.read())
+            self.assertEqual(data["likes"], 1)
+
+        # Liking again should return 400
+        with self.assertRaises(urllib.error.HTTPError) as caught:
+            urllib.request.urlopen(request)
+        self.assertEqual(caught.exception.code, 400)
+        caught.exception.close()
+
+        # Nonexistent post should return 404
+        missing = urllib.request.Request(
+            self.base + "/posts/999/like",
+            data=json.dumps({"name": "Ben"}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        with self.assertRaises(urllib.error.HTTPError) as caught:
+            urllib.request.urlopen(missing)
+        self.assertEqual(caught.exception.code, 404)
         caught.exception.close()
 
 

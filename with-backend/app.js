@@ -40,8 +40,36 @@ function showPost(post) {
   text.className = "post-text";
   text.textContent = post.text;
 
+  const likeButton = document.createElement("button");
+  likeButton.className = "post-like";
+  likeButton.type = "button";
+  likeButton.textContent = post.likes > 0 ? "♥ " + post.likes : "♥";
+  likeButton.addEventListener("click", async () => {
+    const name = authorBox.value.trim();
+    if (name === "") {
+      showStatus("The name must not be empty.");
+      return;
+    }
+    try {
+      const response = await fetch("/posts/" + post.id + "/like", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name }),
+      });
+      const answer = await response.json();
+      if (!response.ok) {
+        showStatus(answer.error);
+        return;
+      }
+      likeButton.textContent = "♥ " + answer.likes;
+      showStatus("");
+    } catch (error) {
+      showStatus(CANNOT_REACH);
+    }
+  });
+
   // textContent, never innerHTML: a post is shown as words, so it cannot run code on the page.
-  item.append(author, time, text);
+  item.append(author, time, text, likeButton);
   timeline.prepend(item);
 }
 

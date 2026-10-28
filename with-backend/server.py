@@ -51,31 +51,63 @@ class TimelineHandler(BaseHTTPRequestHandler):
                     self.send_answer(200, content_type, page_file.read())
             except OSError:
                 self.send_json(404, {"error": "The file " + file_name + " is missing."})
+            return
         else:
             self.send_json(404, {"error": "There is nothing at " + url.path})
 
     def do_POST(self):
-        if urlparse(self.path).path != "/posts":
-            self.send_json(404, {"error": "You can only send a post to /posts"})
-            return
-        try:
-            length = int(self.headers.get("Content-Length") or 0)
-            data = json.loads(self.rfile.read(length))
-        except ValueError:
-            self.send_json(400, {"error": "The request must be JSON."})
-            return
-        if not isinstance(data, dict):
-            self.send_json(400, {"error": "The request must be a JSON object."})
-            return
-        try:
-            row = save_post(self.server.db_path, data.get("author"), data.get("text"))
-        except RuleBroken as problem:
-            self.send_json(400, {"error": str(problem)})
-            return
-        self.send_json(201, post_to_json(row))
-        print(
-            post_to_log_line(row), flush=True
-        )  # one line in the terminal for each new post
+        url = urlparse(self.path)
+        if url.path == "/posts":
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+                data = json.loads(self.rfile.read(length))
+            except ValueError:
+                self.send_json(400, {"error": "The request must be JSON."})
+                return
+            if not isinstance(data, dict):
+                self.send_json(400, {"error": "The request must be a JSON object."})
+                return
+            try:
+                row = save_post(
+                    self.server.db_path, data.get("author"), data.get("text")
+                )
+            except RuleBroken as problem:
+                self.send_json(400, {"error": str(problem)})
+                return
+            self.send_json(201, post_to_json(row))
+            print(
+                post_to_log_line(row), flush=True
+            )  # one line in the terminal for each new post
+        elif url.path.startswith("/posts/") and url.path.endswith("/like"):
+            parts = url.path.strip("/").split("/")
+            if len(parts) == 3 and parts[0] == "posts" and parts[2] == "like":
+                try:
+                    post_id = int(parts[1])
+                except ValueError:
+                    self.send_json(404, {"error": "Invalid post id."})
+                    return
+                try:
+                    length = int(self.headers.get("Content-Length") or 0)
+                    data = json.loads(self.rfile.read(length))
+                except ValueError:
+                    self.send_json(400, {"error": "The request must be JSON."})
+                    return
+                if not isinstance(data, dict):
+                    self.send_json(400, {"error": "The request must be a JSON object."})
+                    return
+                try:
+                    row = like_post(self.server.db_path, post_id, data.get("name"))
+                except KeyError:
+                    self.send_json(404, {"error": f"Post {post_id} does not exist."})
+                    return
+                except RuleBroken as problem:
+                    self.send_json(400, {"error": str(problem)})
+                    return
+                self.send_json(200, post_to_json(row))
+            else:
+                self.send_json(404, {"error": "There is nothing at " + url.path})
+        else:
+            self.send_json(404, {"error": "There is nothing at " + url.path})
 
     def send_json(self, status, data):
         body = json.dumps(data).encode("utf-8")
@@ -136,7 +168,18 @@ def create_tables(db_path):
         "CREATE TABLE IF NOT EXISTS posts ("
         "id INTEGER PRIMARY KEY, "
         "author_id INTEGER NOT NULL REFERENCES users(id), "
-        "text TEXT NOT NULL, posted_at TEXT NOT NULL)"
+        "text TEXT NOT NULL, posted_at TEXT NOT NULL, "
+        "like_count INTEGER NOT NULL DEFAULT 0)"
+    )
+    if old and "like_count" not in old:
+        connection.execute(
+            "ALTER TABLE posts ADD COLUMN like_count INTEGER NOT NULL DEFAULT 0"
+        )
+    connection.execute(
+        "CREATE TABLE IF NOT EXISTS likes ("
+        "post_id INTEGER NOT NULL REFERENCES posts(id), "
+        "user_id INTEGER NOT NULL REFERENCES users(id), "
+        "PRIMARY KEY (post_id, user_id))"
     )
     connection.commit()
     connection.close()
@@ -144,7 +187,7 @@ def create_tables(db_path):
 
 # Each post, with its author's name looked up in users. The view reads row["author"].
 POSTS_WITH_AUTHORS = (
-    "SELECT posts.id, users.name AS author, posts.text, posts.posted_at "
+    "SELECT posts.id, users.name AS author, posts.text, posts.posted_at, posts.like_count "
     "FROM posts JOIN users ON users.id = posts.author_id"
 )
 
@@ -189,6 +232,44 @@ def save_post(db_path, author, text):
     return row
 
 
+def like_post(db_path, post_id, name):
+    """Record that `name` liked `post_id`. Return the updated post row."""
+    name = name.strip() if isinstance(name, str) else ""
+    if name == "":
+        raise RuleBroken("The name must not be empty.")
+    if len(name) > MAX_AUTHOR:
+        raise RuleBroken(f"The name must be {MAX_AUTHOR} characters or fewer.")
+    connection = connect(db_path)
+    try:
+        post = connection.execute(
+            "SELECT id FROM posts WHERE id = ?", (post_id,)
+        ).fetchone()
+        if post is None:
+            raise KeyError(f"Post {post_id} does not exist.")
+        user_id = user_id_for(connection, name)
+        already = connection.execute(
+            "SELECT 1 FROM likes WHERE post_id = ? AND user_id = ?",
+            (post_id, user_id),
+        ).fetchone()
+        if already is not None:
+            raise RuleBroken("You have already liked this post.")
+        connection.execute(
+            "INSERT INTO likes (post_id, user_id) VALUES (?, ?)",
+            (post_id, user_id),
+        )
+        connection.execute(
+            "UPDATE posts SET like_count = like_count + 1 WHERE id = ?",
+            (post_id,),
+        )
+        connection.commit()
+        row = connection.execute(
+            POSTS_WITH_AUTHORS + " WHERE posts.id = ?", (post_id,)
+        ).fetchone()
+        return row
+    finally:
+        connection.close()
+
+
 def posts_after(db_path, after):
     """Return every post with an id larger than `after`, oldest first."""
     connection = connect(db_path)
@@ -211,6 +292,7 @@ def post_to_json(row):
         "author": row["author"],
         "text": row["text"],
         "posted_at": row["posted_at"],
+        "likes": row["like_count"],
     }
 
 

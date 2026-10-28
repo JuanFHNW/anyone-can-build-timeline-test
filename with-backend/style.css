@@ -150,3 +150,20 @@ button {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+.post-like {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 16px;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.post-like:hover {
+  border-color: var(--author);
+  color: var(--author);
+}
